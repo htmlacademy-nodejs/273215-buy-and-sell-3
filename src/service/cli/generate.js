@@ -5,6 +5,7 @@ const {
   shuffle,
 } = require(`../../utils`);
 
+const chalk = require(`chalk`);
 // Подключаем модуль `fs`
 const fs = require(`fs`);
 
@@ -70,22 +71,22 @@ const generateOffers = (count) => (
 
 module.exports = {
   name: `--generate`,
-  run(args) {
+  async run(args) {
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
     if (countOffer > COUNT_MAX) {
-      console.error(`Не больше ${COUNT_MAX} объявлений`);
+      console.error(chalk.red(`Не больше ${COUNT_MAX} объявлений`));
       return true;
     }
     const content = JSON.stringify(generateOffers(countOffer));
 
-    return fs.writeFile(FILE_NAME, content, (err) => {
-      if (err) {
-        console.error(`Can't write data to file...`);
-        return process.exit(ExitCode.error);
-      }
-      return console.info(`Operation success. File created.`);
-    });
+    try {
+      await fs.writeFile(FILE_NAME, content);
+      console.log(chalk.green(`Operation success. File created.`));
+    } catch (err) {
+      console.error(chalk.red(`Can't write data to file...`));
+    }
+    return true;
   }
 };
 
