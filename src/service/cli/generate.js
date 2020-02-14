@@ -7,7 +7,7 @@ const {
 
 const chalk = require(`chalk`);
 // Подключаем модуль `fs`
-const fs = require(`fs`);
+const fs = require(`fs`).promises;
 
 const {
   ExitCode
@@ -17,53 +17,36 @@ const DEFAULT_COUNT = 1;
 const COUNT_MAX = 1000;
 const FILE_NAME = `mocks.json`;
 
-const TITLES = [
-  `Продам книги Стивена Кинга`,
-  `Продам новую приставку Sony Playstation 5`,
-  `Продам отличную подборку фильмов на VHS`,
-  `Куплю антиквариат`,
-  `Куплю породистого кота`,
-];
-
-const SENTENCES = [
-  `Товар в отличном состоянии.`,
-  `Пользовались бережно и только по большим праздникам.`,
-  `Продаю с болью в сердце...`,
-  `Бонусом отдам все аксессуары.`,
-  `Даю недельную гарантию.`,
-  `Если товар не понравится — верну всё до последней копейки.`,
-  `Это настоящая находка для коллекционера!`,
-  `Если найдёте дешевле — сброшу цену.`,
-  `Таких предложений больше нет!`,
-  `При покупке с меня бесплатная доставка в черте города.`,
-];
-
-const CATEGORIES = [
-  `Книги`,
-  `Разное`,
-  `Посуда`,
-  `Игры`,
-  `Животные`,
-  `Журналы`,
-];
-
 const OfferType = {
   offer: `offer`,
   sale: `sale`,
 };
 
+const FILE_SENTENCES_PATH = `./data/sentences.txt`;
+const FILE_TITLES_PATH = `./data/titles.txt`;
+const FILE_CATEGORIES_PATH = `./data/categories.txt`;
 
 const SumRestrict = {
   min: 1000,
   max: 100000,
 };
 
-const generateOffers = (count) => (
+const readContent = async (filePath) => {
+  try {
+    const content = await fs.readFile(filePath, `utf8`);
+    return content.split(`\n`);
+  } catch (err) {
+    console.error(chalk.red(err));
+    return [];
+  }
+};
+
+const generateOffers = (count, titles, categories, sentences) => (
   Array(count).fill({}).map(() => ({
-    category: [CATEGORIES[getRandomInt(0, CATEGORIES.length - 1)]],
-    description: shuffle(SENTENCES).slice(1, 5).join(` `),
+    category: [categories[getRandomInt(0, categories.length - 1)]],
+    description: shuffle(sentences).slice(1, 5).join(` `),
     /* picture: getPictureFileName(getRandomInt(PictureRestrict.min, PictureRestrict.max)), */
-    title: TITLES[getRandomInt(0, TITLES.length - 1)],
+    title: titles[getRandomInt(0, titles.length - 1)],
     type: Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)],
     sum: getRandomInt(SumRestrict.min, SumRestrict.max),
   }))
@@ -72,13 +55,18 @@ const generateOffers = (count) => (
 module.exports = {
   name: `--generate`,
   async run(args) {
+    // Считываем контент из файлов
+    const sentences = await readContent(FILE_SENTENCES_PATH);
+    const titles = await readContent(FILE_TITLES_PATH);
+    const categories = await readContent(FILE_CATEGORIES_PATH);
+
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
     if (countOffer > COUNT_MAX) {
       console.error(chalk.red(`Не больше ${COUNT_MAX} объявлений`));
       return true;
     }
-    const content = JSON.stringify(generateOffers(countOffer));
+    const content = JSON.stringify(generateOffers(countOffer, titles, categories, sentences));
 
     try {
       await fs.writeFile(FILE_NAME, content);
