@@ -6,7 +6,8 @@
   "scripts": {
     "test": "npm run eslint",
     "start": "node ./src/service/service.js",
-    "server": "nodemon ./src/service/cli/server.js --server",
+    "server": "nodemon ./src/service/service.js --server",
+    "front-server": "nodemon ./src/express/index.js",
     "eslint": "eslint --ext .js src/"
   },
   "repository": {
@@ -22,9 +23,14 @@
   "devDependencies": {
     "eslint": "6.8.0",
     "eslint-config-htmlacademy": "0.5.2",
-    "nodemon": "2.0.2"
+    "nodemon": "2.0.2",
+    "pug-lint": "2.6.0",
+    "request": "2.88.2"
   },
   "dependencies": {
-    "express": "4.17.1"
+    "express": "4.17.1",
+    "express-formidable": "1.2.0",
+    "pug": "2.0.4",
+    "request-promise": "4.2.5"
   }
 }
