@@ -21,12 +21,13 @@ class OfferService {
 
   drop(id) {
     const offer = this._offers.find((item) => item.id === id);
+    const offerIndex = this._offers.indexOf(id);
 
     if (!offer) {
       return null;
     }
 
-    this._offers = this._offers.filter((item) => item.id !== id);
+    this._offers = this._offers.splice(offerIndex, 1);
     return offer;
   }
 
