@@ -1,10 +1,12 @@
 'use strict';
 
 const {nanoid} = require(`nanoid`);
+const {getLogger} = require(`../lib/logger`);
 
 const {
   getRandomInt,
   shuffle,
+  printNumWithLead0,
 } = require(`../../utils`);
 
 const chalk = require(`chalk`);
@@ -14,8 +16,10 @@ const fs = require(`fs`).promises;
 const {
   MAX_ID_LENGTH,
   MAX_COMMENTS,
+  PictureRestrict,
 } = require(`../../constants`);
 
+const logger = getLogger();
 const DEFAULT_COUNT = 1;
 const COUNT_MAX = 1000;
 const FILE_NAME = `mocks.json`;
@@ -40,7 +44,7 @@ const readContent = async (filePath) => {
     const content = await fs.readFile(filePath, `utf8`);
     return content.split(`\n`);
   } catch (err) {
-    console.error(chalk.red(err));
+    logger.error(chalk.red(err));
     return [];
   }
 };
@@ -54,12 +58,21 @@ const generateComments = (count, comments) => (
   }))
 );
 
+const getPictureFileName = (number) => {
+  const numWithLead0 = `${printNumWithLead0(number)}`;
+  return {
+    background: numWithLead0,
+    image: `item${numWithLead0}.jpg`,
+    image2x: `item${numWithLead0}@2x.jpg`
+  };
+};
+
 const generateOffers = (count, titles, categories, sentences, comments) => (
   Array(count).fill({}).map(() => ({
     id: nanoid(MAX_ID_LENGTH),
     category: [categories[getRandomInt(0, categories.length - 1)]],
     description: shuffle(sentences).slice(1, 5).join(` `),
-    /* picture: getPictureFileName(getRandomInt(PictureRestrict.min, PictureRestrict.max)), */
+    picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
     title: titles[getRandomInt(0, titles.length - 1)],
     comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments),
     type: Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)],
@@ -79,16 +92,16 @@ module.exports = {
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
     if (countOffer > COUNT_MAX) {
-      console.error(chalk.red(`Не больше ${COUNT_MAX} объявлений`));
+      logger.error(chalk.red(`Не больше ${COUNT_MAX} объявлений`));
       return true;
     }
     const content = JSON.stringify(generateOffers(countOffer, titles, categories, sentences, comments));
 
     try {
       await fs.writeFile(FILE_NAME, content);
-      console.log(chalk.green(`Operation success. File created.`));
+      logger.info(chalk.green(`Operation success. File created.`));
     } catch (err) {
-      console.error(chalk.red(`Can't write data to file...`));
+      logger.error(chalk.red(`Can't write data to file...`));
     }
     return true;
   }
