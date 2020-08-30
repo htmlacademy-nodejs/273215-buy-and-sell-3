@@ -7,6 +7,7 @@ const {
   getRandomInt,
   shuffle,
   printNumWithLead0,
+  readContentFile,
 } = require(`../../utils`);
 
 const chalk = require(`chalk`);
@@ -39,16 +40,6 @@ const SumRestrict = {
   max: 100000,
 };
 
-const readContent = async (filePath) => {
-  try {
-    const content = await fs.readFile(filePath, `utf8`);
-    return content.split(`\n`);
-  } catch (err) {
-    logger.error(chalk.red(err));
-    return [];
-  }
-};
-
 const generateComments = (count, comments) => (
   Array(count).fill({}).map(() => ({
     id: nanoid(MAX_ID_LENGTH),
@@ -70,7 +61,7 @@ const getPictureFileName = (number) => {
 const generateOffers = (count, titles, categories, sentences, comments) => (
   Array(count).fill({}).map(() => ({
     id: nanoid(MAX_ID_LENGTH),
-    category: [categories[getRandomInt(0, categories.length - 1)]],
+    category: shuffle(categories).slice(1, getRandomInt(0, categories.length - 1)),
     description: shuffle(sentences).slice(1, 5).join(` `),
     picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
     title: titles[getRandomInt(0, titles.length - 1)],
@@ -84,10 +75,10 @@ module.exports = {
   name: `--generate`,
   async run(args) {
     // Считываем контент из файлов
-    const sentences = await readContent(FILE_SENTENCES_PATH);
-    const titles = await readContent(FILE_TITLES_PATH);
-    const categories = await readContent(FILE_CATEGORIES_PATH);
-    const comments = await readContent(FILE_COMMENTS_PATH);
+    const sentences = await readContentFile(FILE_SENTENCES_PATH);
+    const titles = await readContentFile(FILE_TITLES_PATH);
+    const categories = await readContentFile(FILE_CATEGORIES_PATH);
+    const comments = await readContentFile(FILE_COMMENTS_PATH);
 
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
