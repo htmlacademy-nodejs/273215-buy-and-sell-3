@@ -1,6 +1,5 @@
 'use strict';
 
-const {nanoid} = require(`nanoid`);
 const {getLogger} = require(`../lib/logger`);
 
 const {
@@ -88,11 +87,11 @@ const generateData = (count, titles, categories, sentences, comments, users) => 
   const offers = Array(count).fill({}).map((_, index) => {
     const offerId = index + 1;
     /* добавляем категории объявления */
-    shuffle(categories).slice(1, getRandomInt(0, categories.length - 1)).forEach((_, index) => {
+    shuffle(categories).slice(1, getRandomInt(0, categories.length - 1)).forEach((_, categoryIndex) => {
       offersCategories.push({
         'id': offersCategories.length + 1,
         'offer_id': offerId,
-        'category_id': index + 1,
+        'category_id': categoryIndex + 1,
       });
     });
     /* генерируем картинки и сохраняем для формирования строк таблицы */
