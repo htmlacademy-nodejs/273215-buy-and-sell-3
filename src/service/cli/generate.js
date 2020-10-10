@@ -1,7 +1,7 @@
 'use strict';
 
 const {nanoid} = require(`nanoid`);
-const {getLogger} = require(`../lib/logger`);
+const logger = require(`../lib/logger`);
 
 const {
   getRandomInt,
@@ -20,7 +20,6 @@ const {
   PictureRestrict,
 } = require(`../../constants`);
 
-const logger = getLogger();
 const DEFAULT_COUNT = 1;
 const COUNT_MAX = 1000;
 const FILE_NAME = `mocks.json`;
