@@ -94,7 +94,7 @@ const generateData = (count, titles, categories, sentences, comments, users) => 
       });
     });
     /* генерируем картинки и сохраняем для формирования строк таблицы */
-    const picturyId = pictures.push(Object.assign({'id': pictures.length + 1}, getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX))));
+    const pictureId = pictures.push(Object.assign({'id': pictures.length + 1}, getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX))));
 
     const offerDate = getRandomDate();
     /* генерируем комментарии объявления */
@@ -111,7 +111,7 @@ const generateData = (count, titles, categories, sentences, comments, users) => 
     return {
       'id': offerId,
       'description': shuffle(sentences).slice(1, 5).join(` `),
-      'picture_id': picturyId,
+      'picture_id': pictureId,
       'title': titles[getRandomInt(0, titles.length - 1)],
       'type': OfferType[Math.floor(Math.random() * Object.keys(OfferType).length)].id,
       'user_id': users[Math.floor(Math.random() * Object.keys(users).length)].id,

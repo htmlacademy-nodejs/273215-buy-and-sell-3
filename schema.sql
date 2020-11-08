@@ -145,6 +145,12 @@ CREATE SEQUENCE public.offers_categories_id_seq
 
 ALTER SEQUENCE public.offers_categories_id_seq OWNED BY public.offers_categories.id;
 
+--
+-- Name: offers_categories uk_category_offer; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE public.offers_categories
+    ADD CONSTRAINT uk_category_offer UNIQUE (offer_id, category_id);
 
 --
 -- Name: offers_comments; Type: TABLE; Schema: public; Owner: -
