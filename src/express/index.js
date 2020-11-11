@@ -27,7 +27,10 @@ app.get(`/`, async (req, res) => {
   const contentNews = await getData(`/api/offers`);
   const contentMostTalked = await getData(`/api/offers`);
   contentMostTalked.length = 4;
-  res.render(`main`, {offers: contentNews, mostTalked: contentMostTalked});
+  res.render(`main`, {
+    offers: contentNews,
+    mostTalked: contentMostTalked,
+  });
 });
 
 app.get(`/register`, (req, res) => res.render(`sign-up`));

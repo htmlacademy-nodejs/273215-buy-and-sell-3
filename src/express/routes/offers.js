@@ -35,7 +35,6 @@ offersRouter.get(`/:id`, async (req, res) => {
 
 offersRouter.post(`/add`, async (req, res) => {
   const reviewForm = req.body;
-  
   const response = await sendData(`/api/offers`, {
     comments: [],
     title: reviewForm[`ticketName`],
@@ -58,7 +57,6 @@ offersRouter.post(`/add`, async (req, res) => {
     });
     res.render(`new-ticket`, {reviewForm, categories});
   }
-  console.log(`response`, response);
 });
 
 module.exports = offersRouter;

@@ -9,7 +9,7 @@ block content
             .ticket-form__avatar-container.js-preview-container
               .ticket-form__avatar.js-preview
               .ticket-form__field-avatar
-                input#avatar.visually-hidden.js-file-field(type='file' name='avatar' value= reviewForm.avatar)
+                input#avatar.visually-hidden.js-file-field(type='file' name='avatar' required value= reviewForm.avatar)
                 label(for='avatar')
                   span.ticket-form__text-upload Загрузить фото…
                   span.ticket-form__text-another Загрузить другое фото…
@@ -25,7 +25,7 @@ block content
                   label(for='comment-field') Описание
                   span Обязательное поле
               .ticket-form__row
-                select#category-field.form__select.js-multiple-select(name='category' data-label='Выбрать категорию публикации')
+                select#category-field.form__select.js-multiple-select(name='category' required data-label='Выбрать категорию публикации')
                   each category in categories
                     option(value= category.item selected= category.selected)= category.item
               .ticket-form__row
@@ -35,9 +35,9 @@ block content
                   span Обязательное поле
                 .form__switch.switch
                   .switch__item
-                    input#buy-field.visually-hidden(type='radio' name='action' value='buy' checked= reviewForm.action === 'buy')
+                    input#buy-field.visually-hidden(type='radio' name='action' value='offer' checked)
                     label.switch__button(for='buy-field') Куплю
                   .switch__item
-                    input#sell-field.visually-hidden(type='radio' name='action' value='sell' checked= reviewForm.action === 'sell')
+                    input#sell-field.visually-hidden(type='radio' name='action' value='sell' )
                     label.switch__button(for='sell-field') Продам
             button.form__button.btn.btn--medium.js-button(type='submit' disabled) Опубликовать

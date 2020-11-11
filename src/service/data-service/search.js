@@ -1,12 +1,18 @@
 'use strict';
 
 class SearchService {
-  constructor(offers) {
-    this._offers = offers;
+  constructor(offer) {
+    this.offer = offer;
   }
-
-  findAll(searchText) {
-    return this._offers.filter((offer) => offer.title.includes(searchText));
+  async findAll(searchText) {
+    const offers = await this.offer.findAll({
+      where: {
+        title: {
+          [Op.like]: `%${searchText}%`,
+        }
+      }
+    });
+    return offers;
   }
 
 }
