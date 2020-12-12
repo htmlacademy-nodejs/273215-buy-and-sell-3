@@ -10,9 +10,9 @@ block content
         ul
           each offer in offers
             li.tickets-list__item.js-card
-              div(class='ticket-card ticket-card--color' + offer.picture.background)
+              div(class=`ticket-card ticket-card--color${offer.picture.background}`)
                 .ticket-card__img
-                  img(src='img/' + offer.picture.image srcset='img/' + offer.picture.image2x alt='Изображение товара')
+                  img(src=`img/${offer.picture.image}` srcset=`img/${offer.picture.image2x}` alt='Изображение товара')
                 .ticket-card__info
                   span.ticket-card__label= offer.type === 'offer' ? 'КУПЛЮ' : 'ПРОДАМ'
                   .ticket-card__categories
@@ -20,8 +20,19 @@ block content
                       a(href='#')= category
                   .ticket-card__header
                     h3.ticket-card__title
-                      a(href='/offers/' + offer.id)= offer.title
+                      a(href=`/offers/${offer.id}`)= offer.title
                     p.ticket-card__price
                       span.js-sum= offer.sum
                       |  ₽
                 button.ticket-card__del.js-delete(type='button') Удалить
+        .tickets-list__pagination
+          ul.pagination
+            each page in pageList
+              li
+                if page === currentPage
+                  a.active= page
+                else
+                  a(href=`/my/?page=${page}`)= page
+            if nextPage
+              li
+                 a(href=`/my/?page=${nextPage}`) дальше

@@ -7,10 +7,10 @@ block content
         each offer in offers
           .comments__block
             .comments__header
-              a.announce-card(href='/offers/' + offer.id)
+              a.announce-card(href=`/offers/${offer.id}`)
                 h2.announce-card__title= offer.title
                 span.announce-card__info
-                  span.announce-card__price= '₽ ' + offer.sum
+                    span.announce-card__price= `₽ ${offer.sum}`
                   span.announce-card__type= offer.type === 'offer' ? 'КУПЛЮ' : 'ПРОДАМ'
             ul.comments-list
               each comment in offer.comments

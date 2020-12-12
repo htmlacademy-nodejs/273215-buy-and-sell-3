@@ -8,12 +8,6 @@ module.exports = (sequelize) => {
 
   class OffersCategory extends Model {}
   OffersCategory.init({
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-      allowNull: false,
-    },
     offerId: {
       type: DataTypes.INTEGER,
       field: `offer_id`,

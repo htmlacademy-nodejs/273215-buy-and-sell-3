@@ -6,7 +6,7 @@ block content
         h1.visually-hidden Карточка объявления
         .ticket__content
           .ticket__img
-            img(src='/img/' + picture.image srcset='/img/' + picture.image2x alt='Изображение товара')
+            img(src=`/img/${picture.image}` srcset=`/img/${picture.image2x}` alt='Изображение товара')
           .ticket__info
             h2.ticket__title= title
             .ticket__header
