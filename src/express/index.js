@@ -24,11 +24,10 @@ app.set(`view engine`, `pug`);
 
 app.get(`/`, async (req, res) => {
   /*  получение данных */
-  const contentNews = await getData(`/api/offers`);
-  const contentMostTalked = await getData(`/api/offers`);
-  contentMostTalked.length = 4;
+  const contentNews = await getData(`/api/offers${req.url}`);
+  const {offers: contentMostTalked} = await getData(`/api/offers/?limit=4`);
   res.render(`main`, {
-    offers: contentNews,
+    ...contentNews,
     mostTalked: contentMostTalked,
   });
 });

@@ -5,12 +5,6 @@ const {Model, DataTypes} = require(`sequelize`);
 module.exports = (sequelize) => {
   class Picture extends Model {}
   Picture.init({
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-      allowNull: false,
-    },
     image: {
       type: DataTypes.STRING,
       allowNull: false,

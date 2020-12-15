@@ -10,7 +10,7 @@ const sequelize = new Sequelize(Env.DB_NAME, Env.DB_LOGIN, Env.DB_PASSWORD, {
 
 const connect = async () => {
   try {
-    await sequelize.sync();
+    await sequelize.authenticate();
     logger.info(`Соединение с сервером БД установлено!`);
     return sequelize;
   } catch (err) {
@@ -22,4 +22,5 @@ const connect = async () => {
 
 module.exports = {
   connect,
+  sequelize,
 };

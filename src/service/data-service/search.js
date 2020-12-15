@@ -6,15 +6,15 @@ class SearchService {
   }
   async findAll(searchText) {
     const offers = await this.offer.findAll({
-      where: {
-        title: {
-          [Op.like]: `%${searchText}%`,
-        }
-      }
+      where: Sequelize.where(
+          Sequelize.fn(`lower`, Sequelize.col(`title`)),
+          {
+            [Op.like]: `%${searchText.toLowerCase()}%`
+          }
+      )
     });
     return offers;
   }
-
 }
 
 module.exports = SearchService;

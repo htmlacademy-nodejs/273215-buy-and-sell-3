@@ -11,8 +11,10 @@ module.exports = (app, offerService, commentService) => {
   app.use(`/offers`, route);
 
   route.get(`/`, async (req, res) => {
-    const offers = await offerService.findAll();
-    res.status(HttpCode.OK).json(offers);
+    const page = +req.query.page;
+    const limit = +req.query.limit;
+    const data = await offerService.findAll({page, limit});
+    res.status(HttpCode.OK).json(data);
   });
 
   route.get(`/:offerId`, async (req, res) => {
@@ -37,17 +39,16 @@ module.exports = (app, offerService, commentService) => {
 
   route.put(`/:offerId`, offerValidator, async (req, res) => {
     const {offerId} = req.params;
-    const existOffer = await offerService.findOne(offerId);
 
-    if (!existOffer) {
+    const [countUpdatedOffer] = await offerService.update(offerId, req.body);
+
+    if (!countUpdatedOffer) {
       return res.status(HttpCode.NOT_FOUND)
       .send(`Not found with ${offerId}`);
     }
 
-    const updatedOffer = await offerService.update(offerId, req.body);
-
     return res.status(HttpCode.OK)
-    .json(updatedOffer);
+    .json(countUpdatedOffer);
   });
 
   route.delete(`/:offerId`, async (req, res) => {

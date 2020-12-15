@@ -5,10 +5,10 @@ block content
       .ticket-form__wrapper
         h1.ticket-form__title Редактировать публикацию
         .ticket-form__tile
-          form.ticket-form__form.form(action='/offers/edit/' + offer.id method='post' enctype='multipart/form-data' autocomplete='off')
+          form.ticket-form__form.form(action=`/offers/edit/${offer.id}` method='post' enctype='multipart/form-data' autocomplete='off')
             .ticket-form__avatar-container.js-preview-container.uploaded
               .ticket-form__avatar.js-preview
-                img(src='/img/' + offer.picture.image srcset='/img/' + offer.picture.image2x alt)
+                img(src=`/img/${offer.picture.image}` srcset=`/img/${offer.picture.image2x}`  alt)
               .ticket-form__field-avatar
                 input#avatar.visually-hidden.js-file-field(type='file' name='avatar')
                 label(for='avatar')
@@ -31,7 +31,6 @@ block content
                     option(value= category.item selected= category.selected)= category.item
               .ticket-form__row
                 .form__field.form__field--price
-                  //TODO закончили тут
                   input#price-field.js-field.js-price(type='number' name='price' min='1' value= offer.sum required)
                   label(for='price-field') Цена
                   span Обязательное поле

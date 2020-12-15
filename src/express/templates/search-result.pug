@@ -13,13 +13,13 @@ block content
         else
           p.search-results__label
             | Найдено
-            span.js-results= ' публикации: ' + searchResult.length
+            span.js-results= ` публикации: ${searchResult.length}`
           ul.search-results__list
             each offer in searchResult
               li.search-results__item
-                div(class='ticket-card ticket-card--color' + offer.picture.background)
+                div(class=`ticket-card ticket-card--color${offer.picture.background}`)
                   .ticket-card__img
-                    img(src='img/' + offer.picture.image srcset='img/' + offer.picture.image2x alt='Изображение товара')
+                    img(src=`/img/${offer.picture.image}` srcset=`/img/${offer.picture.image2x}` alt='Изображение товара')
                   .ticket-card__info
                     span.ticket-card__label= offer.type === 'offer' ? 'КУПЛЮ' : 'ПРОДАМ'
                   .ticket-card__categories
@@ -27,7 +27,7 @@ block content
                       a(href='#')= category
                   .ticket-card__header
                     h3.ticket-card__title
-                      a(href='/offers/' + offer.id)= offer.title
+                      a(href=`/offers/${offer.id}`)= offer.title
                     p.ticket-card__price
                       span.js-sum= offer.sum
                     |  ₽
