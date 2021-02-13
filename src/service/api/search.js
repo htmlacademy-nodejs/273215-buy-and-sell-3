@@ -2,12 +2,13 @@
 
 const {Router} = require(`express`);
 const {HttpCode} = require(`../../constants`);
+const {check} = require(`express-validator`);
 
 module.exports = (app, service) => {
   const route = new Router();
   app.use(`/search`, route);
 
-  route.get(`/`, async (req, res) => {
+  route.get(`/`, check(`query`), async (req, res) => {
     const {query = ``} = req.query;
 
     if (!query) {
@@ -15,10 +16,10 @@ module.exports = (app, service) => {
       return;
     }
 
-    const searchResults = await service.findAll(query);
-    const searchStatus = searchResults.length > 0 ? HttpCode.OK : HttpCode.NOT_FOUND;
+    const {offers: searchResult, ...othersParams} = await service.findAll(query);
+    const searchStatus = searchResult.length > 0 ? HttpCode.OK : HttpCode.NOT_FOUND;
 
     res.status(searchStatus)
-    .json(searchResults);
+    .json({searchResult, othersParams});
   });
 };

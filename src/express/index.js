@@ -37,5 +37,5 @@ app.get(`/login`, (req, res) => res.render(`login`));
 app.get(`/search`, async (req, res) => {
   const searchResult = await getData(`/api${req.url}`);
   const ticketsList = {};
-  res.render(`search-result`, {searchResult, ticketsList});
+  res.render(`search-result`, {...searchResult, ticketsList});
 });

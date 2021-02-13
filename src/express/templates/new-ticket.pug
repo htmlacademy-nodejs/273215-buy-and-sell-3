@@ -5,11 +5,11 @@ block content
       .ticket-form__wrapper
         h1.ticket-form__title Новая публикация
         .ticket-form__tile
-          form.ticket-form__form.form(action='/offers/add' method='POST' autocomplete='off')
+          form.ticket-form__form.form(action='/offers/add' method='POST' autocomplete='off' enctype='multipart/form-data')
             .ticket-form__avatar-container.js-preview-container
               .ticket-form__avatar.js-preview
               .ticket-form__field-avatar
-                input#avatar.visually-hidden.js-file-field(type='file' name='avatar' required value= reviewForm.avatar)
+                input#avatar.visually-hidden.js-file-field(type='file', name='avatar', required, value= reviewForm.avatar)
                 label(for='avatar')
                   span.ticket-form__text-upload Загрузить фото…
                   span.ticket-form__text-another Загрузить другое фото…

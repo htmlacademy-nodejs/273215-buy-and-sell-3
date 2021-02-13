@@ -6,7 +6,7 @@ const {dateFormat} = require(`../../utils`);
 class CommentService {
   async create(offer, comment) {
     const newComment = await Comment.create({
-      text: comment,
+      text: comment.text,
       created: dateFormat(new Date(), `%Y-%m-%d %H:%M:%S`),
       offerId: offer,
       /* todo get user_id */
@@ -18,7 +18,7 @@ class CommentService {
 
   async drop(commentId) {
     const deletedCommentsCount = await Comment.destroy({
-      where: {commentId}
+      where: {id: commentId}
     });
 
     return !!deletedCommentsCount;

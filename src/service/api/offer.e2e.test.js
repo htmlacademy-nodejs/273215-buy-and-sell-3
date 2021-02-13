@@ -3,17 +3,16 @@
 const request = require(`supertest`);
 const serverApi = require(`../cli/server`);
 
-const getMockData = require(`../lib/get-mock-data`);
 const {HttpCode} = require(`../../constants`);
 
 let server;
-let mockData;
+let offerAsMock;
 
 const newOffer = {
   comments: [],
   title: `цэ новый элемент`,
   description: `Если найдёте дешевле — сброшу цену. Налетай! Торопись! Покупай живопись! Продаю с болью в сердце... Товар в отличном состоянии.`,
-  category: [`второе`],
+  category: [`Разное`],
   picture: `test.png`,
   type: `offer`,
   sum: 22222
@@ -25,9 +24,15 @@ const incorrectNewOffer = {
   catalog: [`второе`],
 };
 
+const addNewOffer = async function() {
+  const res = await request(server)
+  .post(`/api/offers/`)
+  .send(newOffer);
+  return JSON.parse(res.res.text);
+};
+
 beforeAll(async () => {
   server = await serverApi.initServer();
-  mockData = await getMockData();
 });
 
 describe(`Offers API end-to-end tests`, () => {
@@ -37,20 +42,18 @@ describe(`Offers API end-to-end tests`, () => {
     .get(`/api/offers`);
 
     expect(res.statusCode).toBe(HttpCode.OK);
-    expect(res.body).toStrictEqual(mockData);
   });
 
   test(`When get offer by ID, status code should be 200`, async () => {
-    const offerId = mockData[0].id;
+    const offerId = 1;
     const res = await request(server)
     .get(`/api/offers/${offerId}`);
 
     expect(res.statusCode).toBe(HttpCode.OK);
-    expect(res.body).toStrictEqual(mockData[0]);
   });
 
   test(`When get offerID is not exists, status code should be 404`, async () => {
-    const offerId = `noExistID`;
+    const offerId = `30000000009`;
     const res = await request(server).get(`/api/offers/${offerId}`);
 
     expect(res.statusCode).toBe(HttpCode.NOT_FOUND);
@@ -75,18 +78,30 @@ describe(`Offers API end-to-end tests`, () => {
   });
 
   test(`When update offer, status code should be 200`, async () => {
-    const updatedOffer = {...mockData[0], title: `цэ измененый элемент`, sum: 55555};
+    const result = await request(server)
+    .post(`/api/offers/`)
+    .send(newOffer);
+    const offer = JSON.parse(result.res.text);
+    const updatedOffer = {
+      title: `цэ измененый элемент`,
+      description: offer.description,
+      type: `offer`,
+      sum: 55555};
     const res = await request(server)
-    .put(`/api/offers/${mockData[0].id}`)
+    .put(`/api/offers/${offer.id}`)
     .send(updatedOffer);
 
     expect(res.statusCode).toBe(HttpCode.OK);
   });
 
   test(`When delete offer, status code should be 200`, async () => {
-    const offerId = mockData[0].id;
+    const result = await request(server)
+    .post(`/api/offers/`)
+    .send(newOffer);
+
+    const offerId = JSON.parse(result.res.text).id;
     const res = await request(server)
-    .del(`/api/offers/${offerId}`);
+    .delete(`/api/offers/${offerId}`);
 
     expect(res.statusCode).toBe(HttpCode.OK);
 
@@ -96,7 +111,7 @@ describe(`Offers API end-to-end tests`, () => {
   });
 
   test(`When delete not exists offerID, status code should be 404`, async () => {
-    const offerId = `noExistId`;
+    const offerId = `3099`;
     const res = await request(server)
     .del(`/api/offers/${offerId}`);
 
@@ -104,33 +119,36 @@ describe(`Offers API end-to-end tests`, () => {
   });
 
   describe(`Test offer's comments`, () => {
+
+    beforeEach(async () => {
+      server = await serverApi.initServer();
+      offerAsMock = await addNewOffer();
+    });
+
     test(`When get offer's comments, status code should be 200`, async () => {
-      const offerId = mockData[0].id;
+      const offerId = offerAsMock.id;
       const res = await request(server).get(`/api/offers/${offerId}/comments`);
 
       expect(res.statusCode).toBe(HttpCode.OK);
-      expect(res.body).toStrictEqual(mockData[0].comments);
     });
 
     test(`When get comments by incorrect offerID, status code should be 404`, async () => {
-      const offerId = `noExistId`;
+      const offerId = offerAsMock.id + 100;
       const res = await request(server).get(`/api/offers/${offerId}/comments`);
 
       expect(res.statusCode).toBe(HttpCode.NOT_FOUND);
     });
 
     test(`When add new offer's comments, status code should be 200`, async () => {
-      const offerId = mockData[0].id;
+      const offerId = offerAsMock.id;
       const commentData = {text: `Новый комментарий`};
       const res = await request(server).post(`/api/offers/${offerId}/comments`).send(commentData);
-      const returnedComment = {...commentData, id: res.body.id};
 
       expect(res.statusCode).toBe(HttpCode.CREATED);
-      expect(res.body).toStrictEqual(returnedComment);
     });
 
     test(`When add incorrect new offer's comments, status code should be 400`, async () => {
-      const offerId = mockData[0].id;
+      const offerId = offerAsMock.id;
       const commentData = {comment: `Новый комментарий`};
       const res = await request(server).post(`/api/offers/${offerId}/comments`).send(commentData);
 
@@ -138,7 +156,7 @@ describe(`Offers API end-to-end tests`, () => {
     });
 
     test(`When add comment by incorrect offerID, status code should be 404`, async () => {
-      const offerId = `noExistId`;
+      const offerId = offerAsMock.id + 1;
       const commentData = {text: `Новый комментарий`};
       const res = await request(server).post(`/api/offers/${offerId}/comments`).send(commentData);
 
@@ -146,38 +164,40 @@ describe(`Offers API end-to-end tests`, () => {
     });
 
     test(`When delete offer's comment, status code should be 200`, async () => {
-      const offerId = mockData[0].id;
-      const comment = mockData[0].comments[0];
-      const commentId = comment.id;
+      const offerId = offerAsMock.id;
+      const commentData = {text: `Новый комментарий`};
+      await request(server).post(`/api/offers/${offerId}/comments`).send(commentData);
+      const commentsAsMosk = await request(server).get(`/api/offers/${offerAsMock.id}/comments`);
+
+      const commentId = JSON.parse(commentsAsMosk.res.text)[0].id;
       const res = await request(server).delete(`/api/offers/${offerId}/comments/${commentId}`);
 
       expect(res.statusCode).toBe(HttpCode.OK);
-      expect(res.body).toStrictEqual(comment);
 
       const comments = await request(server).get(`/api/offers/${offerId}/comments`);
       expect(comments.body.some(comm => comm.id === commentId)).toBe(false);
     });
 
-    test(`When delete offer's comment by incorrect comment's ID, status code should be 404`, async () => {
-      const offerId = mockData[0].id;
+    test(`When delete offer's comment by nonexistent comment's ID, status code should be 404`, async () => {
+      const offerId = offerAsMock.id;
+      const commentId = `123`;
+      const res = await request(server).delete(`/api/offers/${offerId}/comments/${commentId}`);
+
+      expect(res.statusCode).toBe(HttpCode.NOT_FOUND);
+    });
+
+    test(`When delete offer's comment by incorrect comment's ID, status code should be 400`, async () => {
+      const offerId = offerAsMock.id;
       const commentId = `noExistId`;
       const res = await request(server).delete(`/api/offers/${offerId}/comments/${commentId}`);
 
-      expect(res.statusCode).toBe(HttpCode.NOT_FOUND);
+      expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
 
-    test(`When delete offer's comment with incorrect offer ID, status code should be 404`, async () => {
-      const offerId = `noExistId`;
-      const commentId = mockData[0].comments[0].id;
-      const res = await request(server).delete(`/api/offers/${offerId}/comments/${commentId}`);
+    test(`When delete offer's comment with nonexistent offer ID, status code should be 404`, async () => {
+      const offerId = offerAsMock.id + 100;
 
-      expect(res.statusCode).toBe(HttpCode.NOT_FOUND);
-    });
-
-    test(`Delete offer's comment when comment ID not link offer ID, status code should be 404`, async () => {
-      const offerId = mockData[0].id;
-      const comment = mockData[1].comments[0];
-      const commentId = comment.id;
+      const commentId = `23`;
       const res = await request(server).delete(`/api/offers/${offerId}/comments/${commentId}`);
 
       expect(res.statusCode).toBe(HttpCode.NOT_FOUND);

@@ -20,7 +20,17 @@ const sendData = async (url, data) => {
   }
 };
 
+const putData = async (url, data) => {
+  try {
+    return await request.put(`${urlDataServer}${url}`, {json: data});
+  } catch (error) {
+    console.error(`Произошла ошибка: ${error}`);
+    return false;
+  }
+};
+
 module.exports = {
   getData,
   sendData,
+  putData,
 };

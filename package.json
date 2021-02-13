@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npm run test::rest",
     "test::rest": "jest",
-    "start": "node ./src/service/service.js",
+    "start": "node ./src/service/service.js --server",
     "start::debug": "LOG_LEVEL=debug node ./src/service/service.js --server | ./node_modules/.bin/pino-pretty",
     "server": "nodemon ./src/service/service.js --server",
     "front-server": "nodemon ./src/express/index.js",
@@ -39,6 +39,9 @@
     "express": "4.17.1",
     "express-formidable": "1.2.0",
     "express-pino-logger": "5.0.0",
+    "express-validator": "^6.9.2",
+    "joi": "17.3.0",
+    "multer": "^1.4.2",
     "nanoid": "3.1.6",
     "pg": "8.3.3",
     "pino": "^6.2.1",

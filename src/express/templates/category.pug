@@ -184,15 +184,12 @@ block content
                   p Продам свое старое кресло, чтобы сидеть и читать книги зимними...
         .tickets-list__pagination
           ul.pagination
-            li
-              a.active(href='#') 1
-            li
-              a(href='#') 2
-            li
-              a(href='#') 3
-            li
-              a(href='#') 4
-            li
-              a(href='#') 5
-            li
-              a(href='#') дальше
+            each page in pageList
+              li
+                if page === currentPage
+                  a.active= page
+                else
+                  a(href=`/?page=${page}`)= page
+            if nextPage
+              li
+                 a(href=`/?page=${nextPage}`) дальше

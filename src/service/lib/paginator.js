@@ -47,9 +47,14 @@ const getPreviousPage = (page) => {
   return page - 1;
 };
 
+// todo проверить логику формирования массива доступных страниц
 const getPageIndexList = (currentPage, countPage, totalPage) => {
-  let remain = countPage - 1;
   let indexList = [currentPage];
+  if (currentPage >= totalPage) {
+    return indexList;
+  }
+
+  let remain = (countPage <= totalPage ? currentPage : totalPage) - 1;
   for (let i = 1; remain > 0; i++) {
     if (currentPage + i <= totalPage) {
       indexList.push(currentPage + i);

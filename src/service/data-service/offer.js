@@ -44,14 +44,14 @@ class OfferService {
       const picture = await createPicture({
         /* с веба приходит только строка с именем файла */
         image: offer.picture,
-        image2x: ``,
+        image2x: offer.picture,
         background: `2`,
       });
-      const type = await getType(offer.type);
+      const typeId = await getTypeId(offer.type);
       const newOffer = await Offer.create({
         title: offer.title,
         description: offer.description,
-        type: type.id,
+        type: typeId,
         sum: offer.sum,
         createDate: dateFormat(new Date(), `%Y-%m-%d`),
         updated: dateFormat(new Date(), `%Y-%m-%d`),
@@ -77,7 +77,8 @@ class OfferService {
 
   async drop(id) {
     const deletedOffersCount = await Offer.destroy({
-      where: {id}
+      where: {id},
+      cascade: true,
     });
 
     return !!deletedOffersCount;
@@ -106,7 +107,13 @@ class OfferService {
 
   async findOne(id) {
     const offer = await Offer.findByPk(id, offerOptions);
+
+    if (!offer) {
+      return null;
+    }
+
     const category = await getCategoriesList(offer);
+
     return {
       ...offer.toJSON(),
       category,
@@ -115,16 +122,14 @@ class OfferService {
 
   async update(id, offer) {
     try {
-      const updateOffer = await Offer.findByPk(id, {raw: true});
-      const currentPicture = await Offer.findByPk(updateOffer.pictureId, {raw: true});
-      const isSamePicture = Object.entries(offer.picture).every((key, value) => value === currentPicture[key]);
+      const updateOffer = await Offer.findByPk(id);
 
-      if (!isSamePicture) {
+      if (offer.picture) {
         /* загрузили новую картинку */
         updateOffer.pictureId = await createPicture(offer.picture);
       }
 
-      updateOffer.type = await getType(offer.type);
+      updateOffer.type = await getTypeId(offer.type);
 
       updateOffer.title = offer.title;
       updateOffer.description = offer.description;
@@ -134,7 +139,7 @@ class OfferService {
       return await updateOffer.save();
     } catch (error) {
       logger.error(`Error when creating offer ${error}`);
-      return {};
+      return false;
     }
   }
 }
@@ -148,14 +153,14 @@ async function createPicture(picture) {
   return newObject.toJSON();
 }
 
-async function getType(name) {
+async function getTypeId(name) {
   const typeObject = await OffersType.findOne({
     raw: true,
     where: {
       name
     }
   });
-  return typeObject;
+  return typeObject.id;
 }
 
 async function getCategoriesList(offer) {
