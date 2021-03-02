@@ -1,5 +1,6 @@
 'use strict';
 
+const {Op, Sequelize} = require(`sequelize`);
 class SearchService {
   constructor(offer) {
     this.offer = offer;

@@ -24,6 +24,7 @@ const model = () => {
     as: `categories`,
     foreignKey: `offer_id`,
     timestamps: false,
+    onDelete: `CASCADE`,
   });
 
   Category.belongsToMany(Offer, {
@@ -31,6 +32,7 @@ const model = () => {
     as: `offers`,
     foreignKey: `category_id`,
     timestamps: false,
+    onDelete: `CASCADE`,
   });
 
   Offer.belongsTo(Picture, {

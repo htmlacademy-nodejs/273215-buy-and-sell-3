@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.12 (Ubuntu 10.12-0ubuntu0.18.04.1)
--- Dumped by pg_dump version 12.4 (Ubuntu 12.4-1.pgdg18.04+1)
+-- Dumped from database version 10.15 (Ubuntu 10.15-1.pgdg18.04+1)
+-- Dumped by pg_dump version 13.1 (Ubuntu 13.1-1.pgdg18.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -76,7 +76,8 @@ CREATE TABLE public.comments (
     id bigint NOT NULL,
     text character varying(1000) NOT NULL,
     created date NOT NULL,
-    user_id bigint NOT NULL
+    user_id bigint NOT NULL,
+    offer_id bigint
 );
 
 
@@ -145,42 +146,6 @@ CREATE SEQUENCE public.offers_categories_id_seq
 
 ALTER SEQUENCE public.offers_categories_id_seq OWNED BY public.offers_categories.id;
 
---
--- Name: offers_categories uk_category_offer; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE public.offers_categories
-    ADD CONSTRAINT uk_category_offer UNIQUE (offer_id, category_id);
-
---
--- Name: offers_comments; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.offers_comments (
-    id bigint NOT NULL,
-    offer_id bigint NOT NULL,
-    comment_id bigint NOT NULL
-);
-
-
---
--- Name: offers_comments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.offers_comments_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: offers_comments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.offers_comments_id_seq OWNED BY public.offers_comments.id;
-
 
 --
 -- Name: offers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
@@ -231,10 +196,10 @@ ALTER SEQUENCE public.offers_types_id_seq OWNED BY public.offers_types.id;
 
 
 --
--- Name: picturies; Type: TABLE; Schema: public; Owner: -
+-- Name: pictures; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.picturies (
+CREATE TABLE public.pictures (
     id bigint NOT NULL,
     image character varying(50) NOT NULL,
     image2x character varying(50),
@@ -243,10 +208,10 @@ CREATE TABLE public.picturies (
 
 
 --
--- Name: picturies_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: pictures_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.picturies_id_seq
+CREATE SEQUENCE public.pictures_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -255,10 +220,10 @@ CREATE SEQUENCE public.picturies_id_seq
 
 
 --
--- Name: picturies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: pictures_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.picturies_id_seq OWNED BY public.picturies.id;
+ALTER SEQUENCE public.pictures_id_seq OWNED BY public.pictures.id;
 
 
 --
@@ -323,13 +288,6 @@ ALTER TABLE ONLY public.offers_categories ALTER COLUMN id SET DEFAULT nextval('p
 
 
 --
--- Name: offers_comments id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.offers_comments ALTER COLUMN id SET DEFAULT nextval('public.offers_comments_id_seq'::regclass);
-
-
---
 -- Name: offers_types id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -337,10 +295,10 @@ ALTER TABLE ONLY public.offers_types ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- Name: picturies id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: pictures id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.picturies ALTER COLUMN id SET DEFAULT nextval('public.picturies_id_seq'::regclass);
+ALTER TABLE ONLY public.pictures ALTER COLUMN id SET DEFAULT nextval('public.pictures_id_seq'::regclass);
 
 
 --
@@ -375,14 +333,6 @@ ALTER TABLE ONLY public.offers_categories
 
 
 --
--- Name: offers_comments offers_comments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.offers_comments
-    ADD CONSTRAINT offers_comments_pkey PRIMARY KEY (id);
-
-
---
 -- Name: offers offers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -399,11 +349,19 @@ ALTER TABLE ONLY public.offers_types
 
 
 --
--- Name: picturies picturies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: pictures pictures_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.picturies
-    ADD CONSTRAINT picturies_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.pictures
+    ADD CONSTRAINT pictures_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: offers_categories uk_category_offer; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.offers_categories
+    ADD CONSTRAINT uk_category_offer UNIQUE (offer_id, category_id);
 
 
 --
@@ -420,6 +378,13 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: fki_fk_comments_offer; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX fki_fk_comments_offer ON public.comments USING btree (offer_id);
 
 
 --
@@ -451,13 +416,6 @@ CREATE UNIQUE INDEX u_offers_categories_id ON public.offers_categories USING btr
 
 
 --
--- Name: u_offers_comments_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX u_offers_comments_id ON public.offers_comments USING btree (id);
-
-
---
 -- Name: u_offers_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -472,10 +430,10 @@ CREATE UNIQUE INDEX u_offers_types_id ON public.offers_types USING btree (id);
 
 
 --
--- Name: u_picturies_id; Type: INDEX; Schema: public; Owner: -
+-- Name: u_pictures_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX u_picturies_id ON public.picturies USING btree (id);
+CREATE UNIQUE INDEX u_pictures_id ON public.pictures USING btree (id);
 
 
 --
@@ -501,11 +459,19 @@ ALTER TABLE ONLY public.comments
 
 
 --
+-- Name: comments fk_comments_offer; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.comments
+    ADD CONSTRAINT fk_comments_offer FOREIGN KEY (offer_id) REFERENCES public.offers(id) ON DELETE CASCADE;
+
+
+--
 -- Name: offers_categories fk_offers_categories_category; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.offers_categories
-    ADD CONSTRAINT fk_offers_categories_category FOREIGN KEY (category_id) REFERENCES public.categories(id);
+    ADD CONSTRAINT fk_offers_categories_category FOREIGN KEY (category_id) REFERENCES public.categories(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -513,23 +479,7 @@ ALTER TABLE ONLY public.offers_categories
 --
 
 ALTER TABLE ONLY public.offers_categories
-    ADD CONSTRAINT fk_offers_categories_offer FOREIGN KEY (offer_id) REFERENCES public.offers(id);
-
-
---
--- Name: offers_comments fk_offers_comments_comment; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.offers_comments
-    ADD CONSTRAINT fk_offers_comments_comment FOREIGN KEY (comment_id) REFERENCES public.comments(id);
-
-
---
--- Name: offers_comments fk_offers_comments_offer; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.offers_comments
-    ADD CONSTRAINT fk_offers_comments_offer FOREIGN KEY (offer_id) REFERENCES public.offers(id);
+    ADD CONSTRAINT fk_offers_categories_offer FOREIGN KEY (offer_id) REFERENCES public.offers(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -537,7 +487,7 @@ ALTER TABLE ONLY public.offers_comments
 --
 
 ALTER TABLE ONLY public.offers
-    ADD CONSTRAINT fk_offers_picture_id FOREIGN KEY (picture_id) REFERENCES public.picturies(id);
+    ADD CONSTRAINT fk_offers_picture_id FOREIGN KEY (picture_id) REFERENCES public.pictures(id);
 
 
 --
@@ -567,3 +517,4 @@ GRANT ALL ON DATABASE buy_and_sell TO dev;
 --
 -- PostgreSQL database dump complete
 --
+
