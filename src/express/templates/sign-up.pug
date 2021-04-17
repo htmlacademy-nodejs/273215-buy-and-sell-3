@@ -30,3 +30,9 @@ block content
           label(for='user-password-again') Пароль еще раз
           span Обязательное поле
         button.sign-up__button.btn.btn--medium.js-button(type='submit' disabled) Создать аккаунт
+      if Object.keys(errors).length !== 0
+        .form__validation-error
+          p.form__error-message  При добавлении статьи произошли ошибки:
+            ul.form__errors
+              each error in errors
+                li.form__error= error

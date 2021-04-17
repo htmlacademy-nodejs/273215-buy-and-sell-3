@@ -59,7 +59,7 @@ describe(`Offers API end-to-end tests`, () => {
     expect(res.statusCode).toBe(HttpCode.NOT_FOUND);
   });
 
-  test(`When add new offer, status code should be 200`, async () => {
+  test(`When add new offer, status code should be 201`, async () => {
     const res = await request(server)
     .post(`/api/offers/`)
     .send(newOffer);

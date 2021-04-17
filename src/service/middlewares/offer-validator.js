@@ -9,7 +9,6 @@ module.exports = (req, res, next) => {
   const keys = Object.keys(newOffer);
   const keysExists = offerKeys.every((key) => {
     if (!keys.includes(key)) {
-      console.warn(key);
       return keys.includes(key);
     }
   });
