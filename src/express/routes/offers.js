@@ -46,7 +46,7 @@ offersRouter.post(`/add`, upload.single(`avatar`), async (req, res) => {
     title: reviewForm[`ticketName`],
     description: reviewForm[`comment`],
     category: Array.isArray(reviewForm[`category`]) ? reviewForm[`category`] : [reviewForm[`category`]],
-    picture: file,
+    picture: file.filename,
     type: reviewForm[`action`] === `sell` ? `sale` : `offer`,
     sum: +reviewForm[`price`],
   });
@@ -77,7 +77,7 @@ offersRouter.post(`/edit/:id`, upload.single(`avatar`), async (req, res) => {
     sum: +reviewForm[`price`],
   };
   const response = await putData(
-      `/api/offers/${req.params.id}`,
+      `/api/offers/:id`,
       Object.assign(offer, file ? {picture: file} : {})
   );
 

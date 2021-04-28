@@ -2,11 +2,11 @@
 
 const express = require(`express`);
 const path = require(`path`);
-const {getData} = require(`./request`);
 
 const app = express();
 const offersRoutes = require(`./routes/offers`);
 const myRoutes = require(`./routes/my`);
+const appRoutes = require(`./routes/app-router`);
 
 
 const PUBLIC_DIR = `public`;
@@ -15,6 +15,7 @@ app.use(express.urlencoded({extended: false}));
 
 app.use(`/my`, myRoutes);
 app.use(`/offers`, offersRoutes);
+app.use(`/`, appRoutes);
 
 const port = 8080;
 app.listen(port);
@@ -22,20 +23,4 @@ app.listen(port);
 app.set(`views`, path.resolve(__dirname, `templates`));
 app.set(`view engine`, `pug`);
 
-app.get(`/`, async (req, res) => {
-  /*  получение данных */
-  const contentNews = await getData(`/api/offers${req.url}`);
-  const {offers: contentMostTalked} = await getData(`/api/offers/?limit=4`);
-  res.render(`main`, {
-    ...contentNews,
-    mostTalked: contentMostTalked,
-  });
-});
 
-app.get(`/register`, (req, res) => res.render(`sign-up`));
-app.get(`/login`, (req, res) => res.render(`login`));
-app.get(`/search`, async (req, res) => {
-  const searchResult = await getData(`/api${req.url}`);
-  const ticketsList = {};
-  res.render(`search-result`, {...searchResult, ticketsList});
-});
