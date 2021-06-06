@@ -11,6 +11,6 @@ footer.page-footer
     .page-footer__col
       ul.page-footer__nav
         li
-          a(href='/login') Вход и регистрация
+          a(href=`${isLogged ? '/logout' : '/login'}`)= isLogged ? 'Выход' : 'Вход и регистрация'
         li
           a(href='/offers/add') Создать объявление

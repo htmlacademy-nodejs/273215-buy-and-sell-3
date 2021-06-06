@@ -44,7 +44,11 @@ class UserService {
 
     return user.toJSON();
   }
-}
 
+  async checkUser(user, password) {
+    const match = await bCrypt.compare(password, user.password);
+    return match;
+  }
+}
 
 module.exports = UserService;
