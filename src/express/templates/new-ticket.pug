@@ -19,6 +19,7 @@ block content
                   input#ticket-name.js-field(type='text' name='ticketName' required value= reviewForm.ticketName)
                   label(for='ticket-name') Название
                   span Обязательное поле
+                  input(type='hidden' name='_csrf' value=`${_csrf}`)
               .ticket-form__row
                 .form__field
                   textarea#comment-field.js-field(name='comment' cols='30' rows='10' maxlength='400' minlength='50')= reviewForm.comment

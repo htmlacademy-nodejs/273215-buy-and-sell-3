@@ -1,10 +1,19 @@
 'use strict';
 const {Router} = require(`express`);
-const offersRouter = new Router();
-const {getData, sendData, putData} = require(`../request`);
-const upload = require(`../middlewares/uploader`);
+const csrfProtection = require(`../middlewares/csrf-protection`);
+const bodyParser = require(`body-parser`);
+const parseForm = bodyParser.urlencoded({extended: false});
 
-offersRouter.get(`/add`, async (req, res) => {
+const offersRouter = new Router();
+const {
+  getData,
+  sendData,
+  putData
+} = require(`../request`);
+const upload = require(`../middlewares/uploader`);
+const privateRoute = require(`../middlewares/private-route`);
+
+offersRouter.get(`/add`, [csrfProtection, privateRoute], async (req, res) => {
   const allCategories = await getData(`/api/categories`);
   const categories = allCategories.map((item) => {
     return {
@@ -17,7 +26,7 @@ offersRouter.get(`/add`, async (req, res) => {
 
 offersRouter.get(`/category/:id`, (req, res) => res.render(`category`));
 
-offersRouter.get(`/edit/:id`, async (req, res) => {
+offersRouter.get(`/edit/:id`, [csrfProtection, privateRoute], async (req, res) => {
   const offer = await getData(`/api/offers/${req.params.id}`);
   const allCategories = await getData(`/api/categories`);
   const categories = allCategories.map((item) => {
@@ -38,7 +47,12 @@ offersRouter.get(`/:id`, async (req, res) => {
   }
 });
 
-offersRouter.post(`/add`, upload.single(`avatar`), async (req, res) => {
+offersRouter.post(`/add`, [
+  parseForm,
+  csrfProtection,
+  privateRoute,
+  upload.single(`avatar`)
+], async (req, res) => {
   const reviewForm = req.body;
   const {file} = req;
   const response = await sendData(`/api/offers`, {
@@ -65,7 +79,12 @@ offersRouter.post(`/add`, upload.single(`avatar`), async (req, res) => {
   }
 });
 
-offersRouter.post(`/edit/:id`, upload.single(`avatar`), async (req, res) => {
+offersRouter.post(`/edit/:id`, [
+  parseForm,
+  csrfProtection,
+  privateRoute,
+  upload.single(`avatar`)
+], async (req, res) => {
   const reviewForm = req.body;
   const {file} = req;
   const offer = {

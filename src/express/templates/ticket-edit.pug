@@ -34,6 +34,7 @@ block content
                   input#price-field.js-field.js-price(type='number' name='price' min='1' value= offer.sum required)
                   label(for='price-field') Цена
                   span Обязательное поле
+                  input(type='hidden' name='_csrf' value=`${_csrf}`)
                 .form__switch.switch
                   .switch__item
                     input#buy-field.visually-hidden(type='radio' name='action' value='offer'  checked= offer.offer_type.name === 'offer')

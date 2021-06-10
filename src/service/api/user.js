@@ -1,10 +1,13 @@
 'use strict';
 
 const {Router} = require(`express`);
-const {HttpCode} = require(`../../constants`);
+const {
+  HttpCode,
+} = require(`../../constants`);
 const schemas = require(`../middlewares/schemas-validate`);
 const registerValidator = require(`../middlewares/schemas-validator`)(schemas.user);
 const alreadyRegisterValidator = require(`../middlewares/already-register`);
+const authenticate = require(`../middlewares/authenticate`);
 
 module.exports = (app, userService) => {
   const route = new Router();
@@ -25,5 +28,9 @@ module.exports = (app, userService) => {
         data: req.body
       });
     }
+  });
+
+  route.post(`/login`, authenticate(userService), async (req, res) => {
+    res.status(HttpCode.OK).json({avatar: res.locals.avatar});
   });
 };
